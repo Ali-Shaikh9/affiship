@@ -1,7 +1,7 @@
 "use client";
 
 import Loader from "@/components/Loader";
-import Sidebar from "@/components/Sidebar";
+// import Sidebar from "@/components/Sidebar";
 import { useEffect, useState } from "react";
 
 interface User {
@@ -40,7 +40,7 @@ export default function Page() {
 
   return (
     <>
-      <Sidebar imageUrl={user.imageUrl} name={user.name} email={user.email}/>
+      {/* <Sidebar imageUrl={user.imageUrl} name={user.name} email={user.email}/> */}
     </>
   );
 }

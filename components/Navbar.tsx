@@ -1,21 +1,40 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Search } from "lucide-react";
 import { MessageSquareText } from "lucide-react";
 import { User2Icon } from "lucide-react";
 import { HeartIcon } from "lucide-react";
 import { MenuIcon } from "lucide-react";
+import { authClient } from "@/lib/auth-client";
 import Link from "next/link";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
+    const [user, setUser] = useState("")
+  
+    useEffect(() => {
+      async function fetchSession() {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { data: session, error } = await authClient.getSession();
+        if (session?.user) {
+          setUser(`Welcome, ${session.user.name}`);
+        }
+
+        if(!session) {
+          setUser("Please Log In")
+        }
+      }
+      fetchSession();
+    }, []);
 
   return (
     <>
       <nav className="md:flex justify-between items-center border-b border-gray-100 py-4 px-24 hidden shadow-xl z-20">
-        <Link href={"/"}><h1 className="text-3xl font-bold text-gray-800">
-          Affi<span className="text-yellow-400">Ship</span>
-        </h1></Link>
+        <Link href={"/"}>
+          <h1 className="text-3xl font-bold text-gray-800">
+            Affi<span className="text-yellow-400">Ship</span>
+          </h1>
+        </Link>
         <div className="search-bar flex bg-gray-100 relative items-center">
           <input
             type="text"
@@ -28,7 +47,7 @@ const Navbar = () => {
           </div>
         </div>
         <div className="welcome-message">
-          <p className="font-semibold text-xl text-gray-800">Welcome, Ali</p>
+          <p className="font-semibold text-xl text-gray-800">{user}</p>
         </div>
         <div className="elements flex items-center justify-around">
           <ul className="flex items-center gap-16 ">
@@ -39,9 +58,25 @@ const Navbar = () => {
               <HeartIcon className="text-3xl text-gray-800 cursor-pointer hover:bg-gray-100" />
             </li>
             <li>
-              <Link href={"/profile"}><User2Icon className="text-3xl text-gray-800 cursor-pointer hover:bg-gray-100" /></Link>
+              <Link href={"/profile"}>
+                <User2Icon className="text-3xl text-gray-800 cursor-pointer hover:bg-gray-100" />
+              </Link>
             </li>
           </ul>
+        </div>
+        <div className="buttons flex gap-4">
+          <Link href={"/signin"}>
+            {" "}
+            <button className="border-1 border-gray-800 bg-white p-2 font-medium rounded-md hover:bg-gray-600 hover:text-white">
+              SignIn
+            </button>{" "}
+          </Link>
+          <button
+            onClick={async () => await authClient.signOut()}
+            className="border-1 border-gray-800 bg-white p-2 font-medium rounded-md hover:bg-gray-600 hover:text-white"
+          >
+            SignOut
+          </button>
         </div>
       </nav>
 
@@ -72,18 +107,20 @@ const Navbar = () => {
             </div>
           </div>
           <div className="welcome-message">
-            <p className="font-semibold text-xl text-gray-800">Welcome, Ali</p>
+            <p className="font-semibold text-xl text-gray-800">{user}</p>
           </div>
           <div className="elements flex flex-col items-center justify-around">
             <ul className="flex flex-col items-center gap-16 ">
               <li>
-                <MessageSquareText className="text-3xl text-gray-800 cursor-pointer" />
+                <MessageSquareText className="text-3xl text-white cursor-pointer" />
               </li>
               <li>
-                <HeartIcon className="text-3xl text-gray-800 cursor-pointer" />
+                <HeartIcon className="text-3xl text-white cursor-pointer" />
               </li>
               <li>
-                <Link href={"/profile"}><User2Icon className="text-3xl text-gray-800 cursor-pointer"/></Link>
+                <Link href={"/profile"}>
+                  <User2Icon className="text-3xl text-white cursor-pointer" />
+                </Link>
               </li>
             </ul>
           </div>
