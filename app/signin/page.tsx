@@ -2,7 +2,7 @@
 "use client";
 import React, { useState } from "react";
 import { authClient } from "@/lib/auth-client";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 export default function RegisterPage() {
@@ -11,17 +11,23 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
-  const handleSignIn = async () => {
-    const { data, error } = await authClient.signIn.email({
-    email: email, // required
-    password: password, // required
-    rememberMe: true,
-    callbackURL: "/profile",
-}, {
-  onSuccess: () => {
-      redirect("/profile") // redirect to login page
-    },
-});
+    const router = useRouter();
+
+  const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const { data, error } = await authClient.signIn.email(
+      {
+        email: email, // required
+        password: password, // required
+        rememberMe: true,
+        callbackURL: "/profile",
+      },
+      {
+        onSuccess: () => {
+          router.push("/profile"); // redirect to login page
+        },
+      }
+    );
   };
 
   return (
@@ -33,7 +39,10 @@ export default function RegisterPage() {
         </h1>
 
         {/* Form */}
-        <form onSubmit={handleSignIn} className="space-y-4 sm:space-y-5">
+        <form
+          onSubmit={(e) => handleSignIn(e)}
+          className="space-y-4 sm:space-y-5"
+        >
           <div>
             <label className="block text-gray-700 font-medium mb-1">
               Email

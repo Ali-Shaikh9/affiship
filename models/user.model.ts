@@ -1,31 +1,17 @@
-import mongoose from 'mongoose'
+/* eslint-disable @typescript-eslint/no-unused-vars */
+// models/Profile.ts
+import mongoose, { Schema, model, models } from "mongoose";
 
-const userSchema = new mongoose.Schema({
-    imageUrl:String,
-    name:{
-        type:String,
-        required:true,
-        trim:true,
-        unique:true,
-        minLength:[ 3, 'User Name Must be 3 Characters Long']
-    },
-    email:{
-        type:String,
-        required:true,
-        trim:true,
-        lowercase:true,
-        unique:true,
-        minLength:[ 12, 'Email Must be 12 Characters Long']
-    },
-    password:{
-        type:String,
-        required:true,
-        trim:true,
-        minLength:[ 5, 'User Name Must be 5 Characters Long']
-    },
-})
+const ProfileSchema = new Schema(
+  {
+    userId: { type: String, required: true, unique: true },
+    name: { type: String, required: true },
+    email: { type: String, required: true, unique: true },
+    role: { type: String, enum: ["affiliate", "dropshipper"], required: true },
+    location: { type: String }, // searchable field
+    channelLink: { type: String },
+  },
+  { timestamps: true }
+);
 
-const userModel =
-  mongoose.models.user || mongoose.model("user", userSchema);
-
-export default userModel;
+export const Profile = models.Profile || model("Profile", ProfileSchema);

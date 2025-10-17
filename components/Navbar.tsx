@@ -3,35 +3,40 @@ import React, { useEffect, useState } from "react";
 import { Search } from "lucide-react";
 import { MessageSquareText } from "lucide-react";
 import { User2Icon } from "lucide-react";
-import { HeartIcon } from "lucide-react";
+import { SquareDashedBottom } from "lucide-react";
 import { MenuIcon } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import Link from "next/link";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
-    const [user, setUser] = useState("")
-  
-    useEffect(() => {
-      async function fetchSession() {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { data: session, error } = await authClient.getSession();
-        if (session?.user) {
-          setUser(`Welcome, ${session.user.name}`);
-        }
+  const [user, setUser] = useState("");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-        if(!session) {
-          setUser("Please Log In")
-        }
+        const { data: session,isPending  } =  authClient.useSession();
+
+  useEffect(() => {
+     function fetchSession() {
+      if(!isPending) {
+        if (session?.user) {
+        setUser(`Welcome, ${session.user.name}`);
+        setIsLoggedIn(true);
       }
-      fetchSession();
-    }, []);
+
+      if (!session) {
+        setUser("Please Log In");
+        setIsLoggedIn(false)
+      }
+      }
+    }
+    fetchSession();
+  }, [isPending, session]);
 
   return (
     <>
       <nav className="md:flex justify-between items-center border-b border-gray-100 py-4 px-24 hidden shadow-xl z-20">
         <Link href={"/"}>
-          <h1 className="text-3xl font-bold text-gray-800">
+          <h1 className="text-3xl font-bold text-gray-700">
             Affi<span className="text-yellow-400">Ship</span>
           </h1>
         </Link>
@@ -47,43 +52,47 @@ const Navbar = () => {
           </div>
         </div>
         <div className="welcome-message">
-          <p className="font-semibold text-xl text-gray-800">{user}</p>
+          <p className="font-semibold text-xl text-gray-700">{user}</p>
         </div>
         <div className="elements flex items-center justify-around">
           <ul className="flex items-center gap-16 ">
             <li>
-              <MessageSquareText className="text-3xl text-gray-800 cursor-pointer hover:bg-gray-100" />
+              <MessageSquareText className="text-3xl text-gray-700 cursor-pointer" />
             </li>
             <li>
-              <HeartIcon className="text-3xl text-gray-800 cursor-pointer hover:bg-gray-100" />
+              <Link href={"/dashboard"}><SquareDashedBottom className="text-3xl text-gray-700 cursor-pointer" /></Link>
             </li>
             <li>
               <Link href={"/profile"}>
-                <User2Icon className="text-3xl text-gray-800 cursor-pointer hover:bg-gray-100" />
+                <User2Icon className="text-3xl text-gray-700 cursor-pointer " />
               </Link>
             </li>
           </ul>
         </div>
         <div className="buttons flex gap-4">
-          <Link href={"/signin"}>
-            {" "}
-            <button className="border-1 border-gray-800 bg-white p-2 font-medium rounded-md hover:bg-gray-600 hover:text-white">
-              SignIn
-            </button>{" "}
-          </Link>
-          <button
-            onClick={async () => await authClient.signOut()}
-            className="border-1 border-gray-800 bg-white p-2 font-medium rounded-md hover:bg-gray-600 hover:text-white"
-          >
-            SignOut
-          </button>
+          {!isLoggedIn && (
+            <Link href={"/signin"}>
+              {" "}
+              <button className="border-1 border-gray-800 bg-white p-2 font-medium rounded-md hover:bg-gray-600 hover:text-white">
+                SignIn
+              </button>{" "}
+            </Link>
+          )}
+          {isLoggedIn && (
+            <button
+              onClick={async () => await authClient.signOut()}
+              className="border-1 border-gray-800 bg-white p-2 font-medium rounded-md hover:bg-gray-600 hover:text-white"
+            >
+              SignOut
+            </button>
+          )}
         </div>
       </nav>
 
       {/* Mobile Menu */}
 
       <nav className="md:hidden flex justify-between items-center border-b border-gray-100 py-4 px-24">
-        <h1 className="text-3xl font-bold text-gray-800">
+        <h1 className="text-3xl font-bold text-gray-700">
           Affi<span className="text-yellow-400">Ship</span>
         </h1>
         <div className="hamburger">
@@ -92,7 +101,7 @@ const Navbar = () => {
       </nav>
       {open && (
         <div className="flex flex-col w-1/2 py-32 items-center bg-black/10 backdrop-blur-3xl z-20 absolute p-2 min-h-screen top-0 left-0 gap-8 ">
-          <h1 className="text-3xl font-bold text-gray-800">
+          <h1 className="text-3xl font-bold text-gray-700">
             Affi<span className="text-white">Ship</span>
           </h1>
           <div className="search-bar flex bg-gray-100 relative items-center">
@@ -107,7 +116,7 @@ const Navbar = () => {
             </div>
           </div>
           <div className="welcome-message">
-            <p className="font-semibold text-xl text-gray-800">{user}</p>
+            <p className="font-semibold text-xl text-gray-700">{user}</p>
           </div>
           <div className="elements flex flex-col items-center justify-around">
             <ul className="flex flex-col items-center gap-16 ">
@@ -115,7 +124,7 @@ const Navbar = () => {
                 <MessageSquareText className="text-3xl text-white cursor-pointer" />
               </li>
               <li>
-                <HeartIcon className="text-3xl text-white cursor-pointer" />
+                <Link href={"/dashboard"}><SquareDashedBottom className="text-3xl text-white cursor-pointer" /></Link>
               </li>
               <li>
                 <Link href={"/profile"}>
